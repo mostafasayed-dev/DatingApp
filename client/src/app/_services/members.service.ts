@@ -17,13 +17,15 @@ import { Member } from '../_models/member';
 export class MembersService {
 
   private baseUrl = environment.apiUrl;
-  private members: Member[] = [];// to save state without need to send an api request every time
+  //to store date into the service, and because services are singleton, data remains and we can access that any time
+  // to save state without need to send an api request every time
+  private members: Member[] = [];
 
   constructor(private http: HttpClient) { }
 
   getMembers(){
     if(this.members.length > 0) return of(this.members);// return an observable with members data
-    return this.http.get<Member[]>(this.baseUrl + "users").pipe(// to access observable data
+    return this.http.get<Member[]>(this.baseUrl + "users").pipe(// to access observable data and apply what we need on it
       map(members => {
         this.members = members;
         return members;
@@ -44,5 +46,13 @@ export class MembersService {
         this.members[index] = member;
       })
     );
+  }
+
+  setMainPhoto(photoId: number){
+    return this.http.put(this.baseUrl + 'users/set-main-photo/' + photoId, {});
+  }
+
+  deletePhoto(photoId: number){
+    return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId);
   }
 }
